@@ -1,0 +1,41 @@
+rules:
+  - id: senior-discount
+    priority: 20
+    conditions:
+      all:
+        - field: age
+          op: ge
+          value: 65
+        - not:
+            field: banned
+            op: eq
+            value: true
+    actions:
+      - set: {field: discount, value: 0.3}
+
+  - id: vip-discount
+    priority: 10
+    conditions:
+      all:
+        - field: vip
+          op: eq
+          value: true
+        - field: discount
+          op: lt
+          value: 0.2
+    actions:
+      - set: {field: discount, value: 0.2}
+
+  - id: apply-discount
+    priority: 0
+    conditions:
+      all:
+        - field: discount
+          op: gt
+          value: 0
+        - field: final_price
+          op: eq
+          value: null
+    actions:
+      - set: {field: final_price, value: 70}
+      - append: {field: log, value: discount-applied}
